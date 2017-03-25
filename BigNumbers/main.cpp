@@ -4,12 +4,11 @@
 #include <cstdint>
 #include <stdexcept>
 
-using namespace std;
-
 class Number {
 public:
     Number() {
         sign = 1;
+        digits = new std::deque<uint8_t>();
         digits->push_back(0);
     }
 
@@ -19,13 +18,50 @@ public:
     }
 
     Number(int number) {
-        digits = getDigits(number);
+        if(number < 0) { 
+            sign = -sign;
+            number = -number;
+        } digits = getDigits(number);
     }
 
     Number(std::string number) {
+        if(number[0] == '-') {
+            sign = -sign;
+            number.erase(0, 1);
+        } else if(number[0] == '+') {
+            number.erase(0, 1);
+        }
         if(!is_number(number))
-            throw std::invalid_argument("error. received not a number value");
-        digits = getDigits(number);
+            throw std::invalid_argument
+            ("error. received not a number value");
+        if(number.length() == 0) 
+            digits = new std::deque<uint8_t>();
+        else digits = getDigits(number);
+    }
+
+    Number(const Number& number) : sign(number.sign) {
+        digits = new std::deque<uint8_t>();
+        for(size_t i=0; i<number.digits->size(); ++i) {
+            digits->push_back((*number.digits)[i]);
+        }
+    }
+
+    Number& operator+(const Number& number) {
+
+    }
+
+    Number& operator+(int value) {
+
+    }
+
+    void operator+=(const Number& number) {
+        int last_this = this->digits->size()-1;
+        int last_arg = number.digits->size()-1;
+
+    }
+
+    void operator+=(int value) {
+
     }
 
     std::string toString() {
@@ -37,11 +73,11 @@ public:
     }
 
 private:
-    deque<uint8_t>* digits;
+    std::deque<uint8_t>* digits;
     int sign;
 
-    deque<uint8_t>* getDigits(int number) {
-        deque<uint8_t>* digits = new deque<uint8_t>();
+    std::deque<uint8_t>* getDigits(int number) {
+        std::deque<uint8_t>* digits = new std::deque<uint8_t>();
         do {
             uint8_t digit = number % 10;
             number /= 10;
@@ -50,8 +86,8 @@ private:
         return digits;
     }
 
-    deque<uint8_t>* getDigits(std::string number) {
-        deque<uint8_t>* digits = new deque<uint8_t>();
+    std::deque<uint8_t>* getDigits(std::string number) {
+        std::deque<uint8_t>* digits = new std::deque<uint8_t>();
         for(int i=0; i<number.length(); ++i) {
             digits->push_back(number[i] - '0');
         } return digits;
@@ -62,7 +98,16 @@ private:
         while(it != s.end() && std::isdigit(*it)) ++it;
         return !s.empty() && it == s.end();
     }
+
+    static std::deque<uint8_t>* addNumbers(const std::deque<uint8_t>& a, const std::deque<uint8_t>& b) {
+        std::deque<uint8_t>* result = new std::deque<uint8_t>();
+        //for(int i=a.size()-1,j=b.size()-1; ())
+        return NULL;
+    }
 };
+
+
+
 
 int main(void) {
 
