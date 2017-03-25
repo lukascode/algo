@@ -1,2 +1,2 @@
 # algo
-Algorithm implementations
+Algorithm implementations for educational purposes
