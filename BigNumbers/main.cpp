@@ -18,14 +18,14 @@ public:
             delete digits;
     }
 
-    Number(int number) {
+    Number(int number) : sign(1) {
         if(number < 0) { 
             sign = -sign;
             number = -number;
         } digits = getDigits(number);
     }
 
-    Number(std::string number) {
+    Number(std::string number) : sign(1) {
         if(number[0] == '-') {
             sign = -sign;
             number.erase(0, 1);
@@ -47,17 +47,19 @@ public:
         }
     }
 
-    Number& operator+(const Number& number) {
-
+    Number* operator+(const Number& number) {
+        Number* n = new Number(); delete n->digits;
+        if(sign == 1 && number.sign == 1) {
+            n->digits = addNumbers(*digits, *number.digits);
+        } /*else TODO */ 
+        return n;
     }
 
-    Number& operator+(int value) {
-
+    Number* operator+(int value) {
+        return NULL;
     }
 
     void operator+=(const Number& number) {
-        // int last_this = this->digits->size()-1;
-        // int last_arg = number.digits->size()-1;
 
     }
 
@@ -117,7 +119,7 @@ public:
 
 private:
     std::deque<uint8_t>* digits;
-    int sign;
+    int sign; //1 - positive, -1 - negative
 
     std::deque<uint8_t>* getDigits(int number) {
         std::deque<uint8_t>* digits = new std::deque<uint8_t>();
@@ -185,6 +187,14 @@ private:
 int main(void) {
 
 
+    Number number1("10000"), number2("20000");
+
+    std::cout<<number1.toString()<<std::endl;
+    std::cout<<number2.toString()<<std::endl;
+
+    Number* number3 = number1 + number2;
+    std::cout<<number3->toString()<<std::endl;
+    delete number3;
 
     return 0;
 } 
