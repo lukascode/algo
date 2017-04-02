@@ -22,7 +22,8 @@ public:
         if(number < 0) { 
             sign = -sign;
             number = -number;
-        } digits = getDigits(number);
+        } 
+        digits = getDigits(number);
     }
 
     Number(std::string number) : sign(1) {
@@ -37,7 +38,10 @@ public:
             ("error. received not a number value");
         if(number.length() == 0) 
             digits.push_back(0);
-        else digits = getDigits(number);
+        else {
+            digits = getDigits(number);
+            removeZeros(digits);
+        }
     }
 
     Number(const Number& number) : sign(number.sign) {
@@ -60,10 +64,10 @@ public:
         } else if(sign == -1 && number.sign == 1) {
             Number tmp = this->ABS();
             if(number <= tmp) {
-                n.digits = subtractNumbers(number.digits, digits);
+                n.digits = subtractNumbers(digits, number.digits);
                 n.sign = -1;
             } else {
-                n.digits = subtractNumbers(digits, number.digits);
+                n.digits = subtractNumbers(number.digits, digits);
             }
         } else {
             n.digits = addNumbers(digits, number.digits);
@@ -79,15 +83,38 @@ public:
     }
 
     Number operator+(int value) const {
-        
+        Number n(value);
+        return this->operator+(n);
     }
 
     void operator+=(const Number& number) {
-
+        Number n = this->operator+(number);
+        sign = n.sign;
+        digits = n.digits;
     }
 
     void operator+=(int value) {
+        Number n(value);
+        this->operator+=(n);
+    }
 
+    Number operator*(const Number& n) {
+        if(n == Number(0))
+            return Number(0);
+        Number max = n.ABS();
+        Number mult = this->ABS();
+        Number result(this->ABS());
+        Number iter(1);
+        while(iter < max) {
+            result += mult;
+            iter += Number(1);//1;
+        }
+        result.sign = this->sign * n.sign;
+        return result;
+    }
+
+    Number operator*(int value) {
+        return this->operator*(Number(value));
     }
 
     bool operator<(const Number& number) const {
@@ -144,7 +171,7 @@ public:
 
     std::string toString() const {
         std::string str = "";
-        if(sign < 0) str += "-";
+        if(sign < 0 && !(digits.size() == 1 && digits[0] == 0)) str += "-";
         for(size_t i=0; i<digits.size(); ++i) {
             char c = (char)(digits[i] + '0');
             str += c;
@@ -187,7 +214,7 @@ private:
         for(int i=asize-1, j=bsize-1; i>=0; --i,--j) {
             int pos_sum = (j >= 0)?a[i]+b[j]+carr:a[i]+carr;
                 result.push_front(pos_sum%10);
-                carr = (pos_sum>10)?1:0;
+                carr = (pos_sum>=10)?1:0;
         }
         if(carr != 0)
             result.push_front(1);
@@ -209,10 +236,15 @@ private:
                 carr = (anewdigit < 0)?1:0;
                 result.push_front(carr*10+anewdigit);
             }
-        }
-        /* remove zeros at the beginning of the sequence */
-        while(!result.empty() && result.front() == 0) result.pop_front();
+        }  
+        removeZeros(result);
         return result;
+    }
+
+    /* remove zeros at the beginning of the sequence */
+    static void removeZeros(std::deque<uint8_t>& arg) {
+        while(!arg.empty() && arg.front() == 0) arg.pop_front();
+        if(arg.empty()) arg.push_back(0);
     }
 };
 
@@ -228,9 +260,10 @@ int main(int argc, char* argv[]) {
     std::cout<<number1.toString()<<std::endl;
     std::cout<<number2.toString()<<std::endl;
 
-    Number number3 = number1 + number2;
+    Number number3 = number1 * number2;
     std::cout<<number3.toString()<<std::endl;
-  
+
+    
 
     return 0;
 } 
