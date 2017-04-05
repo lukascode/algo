@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 class Number {
 public:
@@ -117,6 +118,17 @@ public:
         return this->operator*(Number(value));
     }
 
+    void operator*=(const Number& n) {
+        Number result = this->operator*(n);
+        this->sign = result.sign;
+        this->digits = result.digits;
+    }
+    void operator*=(int value) {
+        Number result = this->operator*(value);
+        this->sign = result.sign;
+        this->digits = result.digits;
+    }
+ 
     bool operator<(const Number& number) const {
         if(sign == -1 && number.sign == 1)
             return true;
@@ -249,20 +261,40 @@ private:
 };
 
 
+std::string toNegBinary(int value) {
+    std::string result = "";
+    while(value != 0) {
+        int rem = value%(-2);
+        value /= (-2);
+        if(rem < 0) {
+            value += 1;
+            rem += 2;
+        }
+        result += (rem+'0');
+    } 
+    std::reverse(result.begin(), result.end());
+    return result;
+}
 
 
 int main(int argc, char* argv[]) {
 
-    std::string a; std::cout<<"a: "; std::cin>>a;
-    std::string b; std::cout<<"b: "; std::cin>>b;
+    // Big number test
+    // std::string a; std::cout<<"a: "; std::cin>>a;
+    // std::string b; std::cout<<"b: "; std::cin>>b;
 
-    Number number1(a), number2(b);
-    std::cout<<number1.toString()<<std::endl;
-    std::cout<<number2.toString()<<std::endl;
+    // Number number1(a), number2(b);
+    // std::cout<<number1.toString()<<std::endl;
+    // std::cout<<number2.toString()<<std::endl;
 
-    Number number3 = number1 * number2;
-    std::cout<<number3.toString()<<std::endl;
+    // Number number3 = number1 * number2;
+    // std::cout<<number3.toString()<<std::endl;
 
+
+    // eg cast int to neg-binary (-2 base number)
+    for(int i=1; i<10; ++i) {
+        std::cout<<i<<": "<<toNegBinary(i)<<std::endl;
+    }
     
 
     return 0;
